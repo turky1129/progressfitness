@@ -4,227 +4,346 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b1220" />
-  <title>ProgressFit</title>
+  <title>ProgressFit Pro</title>
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
   <style>
-    /* 元のデザインを維持 */
-    :root{ --bg:#0b1220; --border: rgba(255,255,255,.08); --text:#e8eefc; --muted:#9fb0d6; --good:#7CFF8C; --bad:#ff6a7a; --radius:16px; --shadow: 0 18px 60px rgba(0,0,0,.35); }
-    *{box-sizing:border-box}
-    body{ margin:0; color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",Segoe UI,Roboto,Arial,sans-serif; background: radial-gradient(1200px 800px at 30% -10%, rgba(106,227,255,.18), transparent 55%), radial-gradient(900px 700px at 110% 10%, rgba(167,139,250,.18), transparent 60%), var(--bg); padding: 14px 12px 14px; }
-    .phone{ max-width: 430px; margin: 0 auto; min-height: calc(100dvh - 28px); display:flex; flex-direction:column; gap:12px; }
-    .top{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
-    .brand{display:flex; gap:10px; align-items:center; min-width:0}
-    .logo{ width:40px; height:40px; border-radius:14px; background: linear-gradient(135deg,rgba(106,227,255,.28),rgba(167,139,250,.22)); box-shadow:var(--shadow); flex:0 0 auto; cursor:pointer; }
-    .title{font-size:18px; font-weight:900; margin:0;}
-    .sub{font-size:12px; color:var(--muted); margin-top:2px;}
-    .actions{display:flex; gap:8px; align-items:center;}
-    .chip{ border:1px solid var(--border); background: rgba(255,255,255,.03); color: var(--muted); border-radius:999px; padding:8px 10px; font-size:12px; font-weight:900; cursor:pointer; }
-    .seg{ display:flex; border:1px solid var(--border); background: rgba(255,255,255,.03); border-radius:999px; padding:6px; gap:6px; }
-    .seg button{ border:0; background:transparent; color:var(--muted); font-weight:900; padding:10px 12px; border-radius:999px; cursor:pointer; flex:1; }
-    .seg button.active{ color:var(--text); background: rgba(106,227,255,.18); }
-    .kpis{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
-    .kpi{ border:1px solid var(--border); background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03)); border-radius: var(--radius); padding:12px; }
-    .klabel{font-size:12px;color:var(--muted);font-weight:900}
-    .knum{font-size:26px;font-weight:1000;}
-    .panel{ border:1px solid var(--border); background: rgba(255,255,255,.03); border-radius: var(--radius); padding:10px; flex:1; display:flex; flex-direction:column; }
-    .tabs{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:6px; }
-    .tab{ border:1px solid var(--border); background: rgba(255,255,255,.03); color: var(--muted); border-radius:999px; padding:8px 10px; font-size:12px; cursor:pointer; }
-    .tab.active{ color: var(--text); background: rgba(167,139,250,.16); border-color: rgba(167,139,250,.30); }
-    .modalBg{ position:fixed; inset:0; background: rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; padding:16px; z-index: 50; }
-    .modal{ width:min(430px, 100%); background: rgba(12,18,32,.92); backdrop-filter: blur(10px); border-radius: 18px; padding:14px; }
-    .field{ margin-bottom: 10px; }
-    .field label{ display:block; font-size:12px; color:var(--muted); margin-bottom:4px; }
-    .field input{ width:100%; padding:8px; background:rgba(255,255,255,0.05); border:1px solid var(--border); color:white; border-radius:8px; }
+    :root{
+      --bg:#0b1220;
+      --border: rgba(255,255,255,.08);
+      --text:#e8eefc;
+      --muted:#9fb0d6;
+      --accent: #6ae3ff;
+      --purple: #a78bfa;
+      --red: #ff6a7a;
+      --radius: 20px;
+    }
+    *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body{
+      margin: 0; color: var(--text); background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.5; padding: 20px 15px;
+    }
+    .container { max-width: 450px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
+    
+    /* Header */
+    .header { display: flex; justify-content: space-between; align-items: center; }
+    .brand h1 { font-size: 22px; margin: 0; background: linear-gradient(to right, #6ae3ff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .brand p { font-size: 12px; color: var(--muted); margin: 0; }
+    .chips { display: flex; gap: 8px; }
+    .chip { background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 8px 12px; border-radius: 50px; font-size: 12px; cursor: pointer; }
+
+    /* KPI Grid */
+    .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .kpi-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 15px; border-radius: var(--radius); }
+    .kpi-label { font-size: 12px; color: var(--muted); font-weight: bold; }
+    .kpi-value { font-size: 24px; font-weight: 800; margin-top: 4px; }
+    .unit { font-size: 14px; margin-left: 4px; color: var(--muted); }
+
+    /* Main Panel */
+    .main-panel { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: var(--radius); padding: 15px; flex: 1; }
+    .tab-scroller { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+    .tab-scroller::-webkit-scrollbar { display: none; }
+    .tab { white-space: nowrap; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 8px 16px; border-radius: 50px; font-size: 13px; color: var(--muted); cursor: pointer; }
+    .tab.active { background: rgba(106, 227, 255, 0.2); border-color: var(--accent); color: var(--text); }
+
+    .chart-container { height: 280px; position: relative; margin-top: 10px; }
+
+    /* Buttons */
+    .btn { border: none; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; width: 100%; }
+    .btn-primary { background: var(--accent); color: #000; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    .btn-danger { background: rgba(255,106,122,0.1); color: var(--red); border: 1px solid var(--red); }
+
+    /* Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+    .modal { background: #161c2c; width: 100%; max-width: 400px; border-radius: 24px; padding: 20px; border: 1px solid var(--border); max-height: 90vh; overflow-y: auto; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 15px 0; }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: 11px; color: var(--muted); font-weight: bold; }
+    .field input { background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 10px; border-radius: 8px; color: #fff; font-size: 16px; width: 100%; }
+    .field.full { grid-column: span 2; }
+
+    /* List Item */
+    .history-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border); }
   </style>
 </head>
 <body>
 
-<div class="phone">
-  <div class="top">
+<div class="container">
+  <header class="header">
     <div class="brand">
-      <div class="logo" id="logoBtn"></div>
-      <div class="titlewrap">
-        <div class="title">ProgressFit</div>
-        <div class="sub" id="subtitle">Loading…</div>
-      </div>
+      <h1>ProgressFit</h1>
+      <p id="status">読み込み中...</p>
     </div>
-    <div class="actions">
-      <div class="chip" id="countChip">件数 <b id="count">0</b></div>
-      <div class="chip" id="openAdd">＋追加</div>
+    <div class="chips">
+      <div class="chip" id="btnHistory">履歴 <span id="dataCount">0</span></div>
+      <div class="chip" id="btnExport">PDF</div>
     </div>
-  </div>
+  </header>
 
-  <div class="kpis">
-    <div class="kpi">
+  <div class="kpi-grid">
+    <div class="kpi-card">
       <div class="klabel">体重</div>
-      <div class="knum" id="k_weight">—</div>
+      <div class="kpi-value" id="kpi-weight">--<span class="unit">kg</span></div>
     </div>
-    <div class="kpi">
+    <div class="kpi-card">
       <div class="klabel">体脂肪率</div>
-      <div class="knum" id="k_body_fat_pct">—</div>
+      <div class="kpi-value" id="kpi-fat">--<span class="unit">%</span></div>
     </div>
-    <div class="kpi">
+    <div class="kpi-card">
       <div class="klabel">骨格筋量</div>
-      <div class="knum" id="k_skeletal_muscle_kg">—</div>
+      <div class="kpi-value" id="kpi-muscle">--<span class="unit">kg</span></div>
     </div>
-    <div class="kpi">
-      <div class="klabel">ウエスト</div>
-      <div class="knum" id="k_waist">—</div>
+    <div class="kpi-card">
+      <div class="klabel">BMI</div>
+      <div class="kpi-value" id="kpi-bmi">--</div>
     </div>
   </div>
 
-  <div class="panel">
-    <div class="tabs" id="metricTabs">
-      <div class="tab active" data-m="weight_kg">体重</div>
-      <div class="tab" data-m="body_fat_pct">体脂肪率</div>
-      <div class="tab" data-m="skeletal_muscle_kg">骨格筋量</div>
-      <div class="tab" data-m="waist">ウエスト</div>
-      <div class="tab" data-m="limb_lbm">四肢除脂肪</div>
+  <div class="main-panel">
+    <div class="tab-scroller" id="tabContainer"></div>
+    <div class="chart-container">
+      <canvas id="mainChart"></canvas>
     </div>
-    <div style="flex:1; min-height:200px;">
-      <canvas id="trend"></canvas>
+  </div>
+
+  <button class="btn btn-primary" id="btnAdd">新規データ入力を追加</button>
+</div>
+
+<div class="modal-overlay" id="modalForm">
+  <div class="modal">
+    <h2 id="modalTitle">データ入力</h2>
+    <input type="hidden" id="f_index">
+    <div class="form-grid" id="formFields">
+      </div>
+    <div style="display:flex; gap:10px; margin-top:20px;">
+      <button class="btn btn-outline" onclick="closeModal('modalForm')">閉じる</button>
+      <button class="btn btn-primary" id="btnSave">保存する</button>
     </div>
-    <div class="seg" id="viewSeg" style="margin-top:10px;">
-      <button class="active" data-view="trend">Trend</button>
-      <button data-view="more">その他指標</button>
-    </div>
+    <button class="btn btn-danger" id="btnDelete" style="margin-top:10px; display:none;">このデータを削除</button>
   </div>
 </div>
 
-<div class="modalBg" id="modalAddBg">
+<div class="modal-overlay" id="modalHistory">
   <div class="modal">
-    <h3>データ入力</h3>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-      <div class="field" style="grid-column: span 2;">
-        <label>測定日</label><input id="a_date" type="date">
-      </div>
-      <div class="field"><label>体重(kg)</label><input id="a_weight_kg" type="number" step="0.1"></div>
-      <div class="field"><label>BMI</label><input id="a_bmi" type="number" step="0.1"></div>
-      <div class="field"><label>ウエスト(cm)</label><input id="a_waist" type="number" step="0.1"></div>
-      <div class="field"><label>体脂肪量(kg)</label><input id="a_fat_mass_kg" type="number" step="0.1"></div>
-      <div class="field"><label>内臓脂肪指数</label><input id="a_visceral_fat_idx" type="number" step="0.1"></div>
-      <div class="field"><label>体脂肪率(%)</label><input id="a_body_fat_pct" type="number" step="0.1"></div>
-      <div class="field"><label>骨格筋量(kg)</label><input id="a_skeletal_muscle_kg" type="number" step="0.1"></div>
-      <div class="field"><label>基礎代謝(kcal)</label><input id="a_bmr" type="number"></div>
-      <div class="field" style="grid-column: span 2;"><label>四肢の除脂肪量(kg)</label><input id="a_limb_lbm" type="number" step="0.1"></div>
-    </div>
-    <div style="text-align:right; margin-top:10px;">
-      <button onclick="closeModal(modalAddBg)">キャンセル</button>
-      <button id="saveAdd" style="background:#6ae3ff; color:#0b1220; font-weight:bold;">保存</button>
-    </div>
+    <h2>記録履歴</h2>
+    <div id="historyList" style="margin-bottom:20px;"></div>
+    <button class="btn btn-outline" onclick="closeModal('modalHistory')">閉じる</button>
   </div>
 </div>
 
 <script>
-const SHEET_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzGzX9BIdc_ixAIAjkNla1-6Co5auO5LzUyCFAQjIwuVEVufiMJHjAkvm6g52t2Lq2vpQ/exec';
-const SHEET_TOKEN = 'CHANGE_ME_TOKEN';
+/**
+ * 設定
+ */
+const ENDPOINT = 'https://script.google.com/macros/s/AKfycbzGzX9BIdc_ixAIAjkNla1-6Co5auO5LzUyCFAQjIwuVEVufiMJHjAkvm6g52t2Lq2vpQ/exec';
+const TOKEN = 'MY_FITNESS_TOKEN'; // GAS側のTOKENと合わせてください
 
 const METRICS = {
-  weight_kg: { name: '体重', unit: 'kg' },
-  bmi: { name: 'BMI', unit: '' },
-  waist: { name: 'ウエスト', unit: 'cm' },
-  fat_mass_kg: { name: '体脂肪量', unit: 'kg' },
-  visceral_fat_idx: { name: '内臓脂肪指数', unit: '' },
-  body_fat_pct: { name: '体脂肪率', unit: '%' },
-  skeletal_muscle_kg: { name: '骨格筋量', unit: 'kg' },
-  bmr: { name: '基礎代謝', unit: 'kcal' },
-  limb_lbm: { name: '四肢除脂肪量', unit: 'kg' }
+  weight_kg:           { name: '体重', unit: 'kg', color: '#6ae3ff' },
+  bmi:                 { name: 'BMI', unit: '', color: '#ffb86c' },
+  waist:               { name: 'ウエスト', unit: 'cm', color: '#ff79c6' },
+  fat_mass_kg:         { name: '体脂肪量', unit: 'kg', color: '#bd93f9' },
+  visceral_fat_idx:    { name: '内臓脂肪指数', unit: '', color: '#ff5555' },
+  body_fat_pct:        { name: '体脂肪率', unit: '%', color: '#50fa7b' },
+  skeletal_muscle_kg:  { name: '骨格筋量', unit: 'kg', color: '#f1fa8c' },
+  bmr:                 { name: '基礎代謝', unit: 'kcal', color: '#8be9fd' },
+  limb_lbm:            { name: '四肢除脂肪量', unit: 'kg', color: '#ffb86c' }
 };
 
-let rows = [];
-let currentMetric = 'weight_kg';
-let trendChart = null;
+const KEYS = ['date', ...Object.keys(METRICS)];
+let state = { rows: [], currentMetric: 'weight_kg', chart: null };
 
-const $ = id => document.getElementById(id);
+/**
+ * 初期化
+ */
+window.onload = () => {
+  initForm();
+  createTabs();
+  fetchData();
+};
 
-// --- GAS 連携処理 ---
-async function reloadRows() {
-  $('subtitle').textContent = '読み込み中...';
-  try {
-    const res = await fetch(`${SHEET_ENDPOINT}?action=read&token=${SHEET_TOKEN}`);
-    const payload = await res.json();
-    rows = payload.rows.map(r => {
-      let obj = { date: r[0] };
-      Object.keys(METRICS).forEach((key, i) => obj[key] = parseFloat(r[i+1]));
-      return obj;
-    }).sort((a,b) => a.date.localeCompare(b.date));
-    render();
-  } catch(e) { $('subtitle').textContent = 'エラー'; }
+function initForm() {
+  const container = document.getElementById('formFields');
+  let html = `<div class="field full"><label>測定日</label><input type="date" id="f_date"></div>`;
+  Object.keys(METRICS).forEach(key => {
+    html += `<div class="field"><label>${METRICS[key].name} (${METRICS[key].unit})</label>
+             <input type="number" step="0.1" id="f_${key}"></div>`;
+  });
+  container.innerHTML = html;
 }
 
-function render() {
-  if(!rows.length) return;
-  const last = rows[rows.length - 1];
-  $('count').textContent = rows.length;
-  $('subtitle').textContent = `${rows[0].date} 〜 ${last.date}`;
-
-  // KPI 更新
-  $('k_weight').textContent = last.weight_kg.toFixed(1) + 'kg';
-  $('k_body_fat_pct').textContent = last.body_fat_pct.toFixed(1) + '%';
-  $('k_skeletal_muscle_kg').textContent = last.skeletal_muscle_kg.toFixed(1) + 'kg';
-  $('k_waist').textContent = last.waist.toFixed(1) + 'cm';
-
-  updateChart();
-}
-
-function updateChart() {
-  const ctx = $('trend').getContext('2d');
-  const labels = rows.map(r => r.date);
-  const data = rows.map(r => r[currentMetric]);
-
-  if(trendChart) trendChart.destroy();
-  trendChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        label: METRICS[currentMetric].name,
-        data: data,
-        borderColor: '#6ae3ff',
-        tension: 0.3,
-        fill: false
-      }]
-    },
-    options: { responsive: true, maintainAspectRatio: false }
+function createTabs() {
+  const container = document.getElementById('tabContainer');
+  Object.keys(METRICS).forEach(key => {
+    const div = document.createElement('div');
+    div.className = `tab ${key === state.currentMetric ? 'active' : ''}`;
+    div.textContent = METRICS[key].name;
+    div.onclick = () => {
+      state.currentMetric = key;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      div.classList.add('active');
+      renderChart();
+    };
+    container.appendChild(div);
   });
 }
 
-// --- イベント設定 ---
-$('openAdd').onclick = () => $('modalAddBg').style.display = 'flex';
-function closeModal(el) { el.style.display = 'none'; }
-
-$('saveAdd').onclick = async () => {
-  const data = {
-    action: 'upsert',
-    date: $('a_date').value,
-    weight_kg: $('a_weight_kg').value,
-    bmi: $('a_bmi').value,
-    waist: $('a_waist').value,
-    fat_mass_kg: $('a_fat_mass_kg').value,
-    visceral_fat_idx: $('a_visceral_fat_idx').value,
-    body_fat_pct: $('a_body_fat_pct').value,
-    skeletal_muscle_kg: $('a_skeletal_muscle_kg').value,
-    bmr: $('a_bmr').value,
-    limb_lbm: $('a_limb_lbm').value,
-    token: SHEET_TOKEN
-  };
-
-  await fetch(SHEET_ENDPOINT, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(data) });
-  closeModal($('modalAddBg'));
-  reloadRows();
-};
-
-$('metricTabs').onclick = (e) => {
-  if(e.target.classList.contains('tab')) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    e.target.classList.add('active');
-    currentMetric = e.target.dataset.m;
-    updateChart();
+/**
+ * 通信処理
+ */
+async function fetchData() {
+  document.getElementById('status').textContent = '同期中...';
+  try {
+    const res = await fetch(`${ENDPOINT}?action=read&token=${TOKEN}`);
+    const data = await res.json();
+    // GASからの配列をオブジェクトに変換
+    state.rows = data.rows.map(r => {
+      let obj = {};
+      KEYS.forEach((key, i) => {
+        obj[key] = (key === 'date') ? r[i] : parseFloat(r[i]) || 0;
+      });
+      return obj;
+    }).sort((a, b) => a.date.localeCompare(b.date));
+    
+    updateUI();
+  } catch (e) {
+    document.getElementById('status').textContent = 'エラーが発生しました';
+    console.error(e);
   }
-};
+}
 
-window.onload = reloadRows;
+async function saveData() {
+  const btn = document.getElementById('btnSave');
+  btn.disabled = true; btn.textContent = '保存中...';
+
+  const payload = new URLSearchParams();
+  payload.append('action', 'upsert');
+  payload.append('token', TOKEN);
+  KEYS.forEach(key => {
+    payload.append(key, document.getElementById(`f_${key === 'date' ? 'date' : key}`).value);
+  });
+
+  try {
+    await fetch(ENDPOINT, { method: 'POST', mode: 'no-cors', body: payload });
+    closeModal('modalForm');
+    fetchData();
+  } catch (e) { alert('保存失敗'); }
+  btn.disabled = false; btn.textContent = '保存する';
+}
+
+/**
+ * 描画
+ */
+function updateUI() {
+  document.getElementById('dataCount').textContent = state.rows.length;
+  if (state.rows.length > 0) {
+    const last = state.rows[state.rows.length - 1];
+    document.getElementById('status').textContent = `${last.date} のデータ`;
+    document.getElementById('kpi-weight').innerHTML = `${last.weight_kg.toFixed(1)}<span class="unit">kg</span>`;
+    document.getElementById('kpi-fat').innerHTML = `${last.body_fat_pct.toFixed(1)}<span class="unit">%</span>`;
+    document.getElementById('kpi-muscle').innerHTML = `${last.skeletal_muscle_kg.toFixed(1)}<span class="unit">kg</span>`;
+    document.getElementById('kpi-bmi').textContent = last.bmi.toFixed(1);
+    renderChart();
+  }
+}
+
+function renderChart() {
+  const ctx = document.getElementById('mainChart').getContext('2d');
+  const m = METRICS[state.currentMetric];
+  
+  if (state.chart) state.chart.destroy();
+  state.chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: state.rows.map(r => r.date.split('-').slice(1).join('/')),
+      datasets: [{
+        label: m.name,
+        data: state.rows.map(r => r[state.currentMetric]),
+        borderColor: m.color,
+        backgroundColor: m.color + '22',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#9fb0d6' } },
+        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9fb0d6' } }
+      }
+    }
+  });
+}
+
+/**
+ * モーダル操作
+ */
+function openModal(id, idx = null) {
+  document.getElementById(id).style.display = 'flex';
+  if (id === 'modalForm') {
+    document.getElementById('btnDelete').style.display = (idx !== null) ? 'block' : 'none';
+    if (idx !== null) {
+      const data = state.rows[idx];
+      KEYS.forEach(k => document.getElementById(`f_${k}`).value = data[k]);
+    } else {
+      document.getElementById('f_date').value = new Date().toISOString().split('T')[0];
+    }
+  } else if (id === 'modalHistory') {
+    renderHistory();
+  }
+}
+
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  list.innerHTML = state.rows.slice().reverse().map((r, i) => `
+    <div class="history-item">
+      <span><b>${r.date}</b>: ${r.weight_kg}kg</span>
+      <button class="chip" onclick="closeModal('modalHistory'); openModal('modalForm', ${state.rows.length - 1 - i})">修正</button>
+    </div>
+  `).join('');
+}
+
+/**
+ * PDF出力
+ */
+async function exportPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  doc.setFontSize(20);
+  doc.text("ProgressFit Report", 10, 20);
+  
+  let y = 30;
+  state.rows.forEach(r => {
+    if (y > 270) { doc.addPage(); y = 20; }
+    doc.setFontSize(10);
+    doc.text(`${r.date} | 体重:${r.weight_kg}kg | 体脂肪:${r.body_fat_pct}% | 筋肉:${r.skeletal_muscle_kg}kg`, 10, y);
+    y += 7;
+  });
+  doc.save("fitness_report.pdf");
+}
+
+// イベント
+document.getElementById('btnAdd').onclick = () => openModal('modalForm');
+document.getElementById('btnHistory').onclick = () => openModal('modalHistory');
+document.getElementById('btnSave').onclick = saveData;
+document.getElementById('btnExport').onclick = exportPDF;
+document.getElementById('btnDelete').onclick = async () => {
+  if(!confirm('削除しますか？')) return;
+  const payload = new URLSearchParams({ action: 'delete', token: TOKEN, date: document.getElementById('f_date').value });
+  await fetch(ENDPOINT, { method: 'POST', mode: 'no-cors', body: payload });
+  closeModal('modalForm');
+  fetchData();
+};
 </script>
+
 </body>
 </html>
