@@ -16,58 +16,50 @@
       --text:#e8eefc;
       --muted:#9fb0d6;
       --accent: #6ae3ff;
-      --purple: #a78bfa;
-      --red: #ff6a7a;
       --radius: 20px;
     }
     *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body{
       margin: 0; color: var(--text); background: var(--bg);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      line-height: 1.5; padding: 20px 15px;
+      padding: 20px 15px;
     }
     .container { max-width: 450px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
     
-    /* Header */
     .header { display: flex; justify-content: space-between; align-items: center; }
     .brand h1 { font-size: 22px; margin: 0; background: linear-gradient(to right, #6ae3ff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .brand p { font-size: 12px; color: var(--muted); margin: 0; }
     .chips { display: flex; gap: 8px; }
-    .chip { background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 8px 12px; border-radius: 50px; font-size: 12px; cursor: pointer; }
+    .chip { background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 8px 12px; border-radius: 50px; font-size: 12px; cursor: pointer; font-weight: bold; }
 
-    /* KPI Grid */
     .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .kpi-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 15px; border-radius: var(--radius); }
-    .kpi-label { font-size: 12px; color: var(--muted); font-weight: bold; }
-    .kpi-value { font-size: 24px; font-weight: 800; margin-top: 4px; }
+    .klabel { font-size: 12px; color: var(--muted); font-weight: bold; }
+    .knum { font-size: 24px; font-weight: 800; margin-top: 4px; }
     .unit { font-size: 14px; margin-left: 4px; color: var(--muted); }
 
-    /* Main Panel */
-    .main-panel { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: var(--radius); padding: 15px; flex: 1; }
-    .tab-scroller { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+    .main-panel { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: var(--radius); padding: 15px; flex: 1; display: flex; flex-direction: column; }
+    .tab-scroller { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 10px; scrollbar-width: none; }
     .tab-scroller::-webkit-scrollbar { display: none; }
     .tab { white-space: nowrap; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 8px 16px; border-radius: 50px; font-size: 13px; color: var(--muted); cursor: pointer; }
     .tab.active { background: rgba(106, 227, 255, 0.2); border-color: var(--accent); color: var(--text); }
 
-    .chart-container { height: 280px; position: relative; margin-top: 10px; }
+    .chart-box { height: 280px; width: 100%; position: relative; }
 
-    /* Buttons */
-    .btn { border: none; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; width: 100%; }
+    .btn { border: none; padding: 15px; border-radius: 16px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; }
     .btn-primary { background: var(--accent); color: #000; }
     .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-    .btn-danger { background: rgba(255,106,122,0.1); color: var(--red); border: 1px solid var(--red); }
+    .btn-danger { background: rgba(255,106,122,0.1); color: #ff6a7a; border: 1px solid #ff6a7a; }
 
-    /* Modal */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; backdrop-filter: blur(5px); }
     .modal { background: #161c2c; width: 100%; max-width: 400px; border-radius: 24px; padding: 20px; border: 1px solid var(--border); max-height: 90vh; overflow-y: auto; }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 15px 0; }
     .field { display: flex; flex-direction: column; gap: 5px; }
     .field label { font-size: 11px; color: var(--muted); font-weight: bold; }
-    .field input { background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 10px; border-radius: 8px; color: #fff; font-size: 16px; width: 100%; }
+    .field input { background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: #fff; font-size: 16px; }
     .field.full { grid-column: span 2; }
 
-    /* List Item */
-    .history-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border); }
+    .history-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid var(--border); }
   </style>
 </head>
 <body>
@@ -79,46 +71,32 @@
       <p id="status">読み込み中...</p>
     </div>
     <div class="chips">
-      <div class="chip" id="btnHistory">履歴 <span id="dataCount">0</span></div>
-      <div class="chip" id="btnExport">PDF</div>
+      <div class="chip" onclick="openModal('modalHistory')">履歴 <span id="dataCount">0</span></div>
+      <div class="chip" id="btnPdf">PDF</div>
     </div>
   </header>
 
   <div class="kpi-grid">
-    <div class="kpi-card">
-      <div class="klabel">体重</div>
-      <div class="kpi-value" id="kpi-weight">--<span class="unit">kg</span></div>
-    </div>
-    <div class="kpi-card">
-      <div class="klabel">体脂肪率</div>
-      <div class="kpi-value" id="kpi-fat">--<span class="unit">%</span></div>
-    </div>
-    <div class="kpi-card">
-      <div class="klabel">骨格筋量</div>
-      <div class="kpi-value" id="kpi-muscle">--<span class="unit">kg</span></div>
-    </div>
-    <div class="kpi-card">
-      <div class="klabel">BMI</div>
-      <div class="kpi-value" id="kpi-bmi">--</div>
-    </div>
+    <div class="kpi-card"><div class="klabel">体重</div><div class="knum" id="kpi-weight">--<span class="unit">kg</span></div></div>
+    <div class="kpi-card"><div class="klabel">体脂肪率</div><div class="knum" id="kpi-fat">--<span class="unit">%</span></div></div>
+    <div class="kpi-card"><div class="klabel">骨格筋量</div><div class="knum" id="kpi-muscle">--<span class="unit">kg</span></div></div>
+    <div class="kpi-card"><div class="klabel">BMI</div><div class="knum" id="kpi-bmi">--</div></div>
   </div>
 
   <div class="main-panel">
     <div class="tab-scroller" id="tabContainer"></div>
-    <div class="chart-container">
+    <div class="chart-box">
       <canvas id="mainChart"></canvas>
     </div>
   </div>
 
-  <button class="btn btn-primary" id="btnAdd">新規データ入力を追加</button>
+  <button class="btn btn-primary" onclick="openModal('modalForm')">新規データを追加</button>
 </div>
 
 <div class="modal-overlay" id="modalForm">
   <div class="modal">
     <h2 id="modalTitle">データ入力</h2>
-    <input type="hidden" id="f_index">
-    <div class="form-grid" id="formFields">
-      </div>
+    <div class="form-grid" id="formFields"></div>
     <div style="display:flex; gap:10px; margin-top:20px;">
       <button class="btn btn-outline" onclick="closeModal('modalForm')">閉じる</button>
       <button class="btn btn-primary" id="btnSave">保存する</button>
@@ -130,17 +108,14 @@
 <div class="modal-overlay" id="modalHistory">
   <div class="modal">
     <h2>記録履歴</h2>
-    <div id="historyList" style="margin-bottom:20px;"></div>
+    <div id="historyList" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px;"></div>
     <button class="btn btn-outline" onclick="closeModal('modalHistory')">閉じる</button>
   </div>
 </div>
 
 <script>
-/**
- * 設定
- */
 const ENDPOINT = 'https://script.google.com/macros/s/AKfycbzGzX9BIdc_ixAIAjkNla1-6Co5auO5LzUyCFAQjIwuVEVufiMJHjAkvm6g52t2Lq2vpQ/exec';
-const TOKEN = 'MY_FITNESS_TOKEN'; // GAS側のTOKENと合わせてください
+const TOKEN = 'MY_FITNESS_TOKEN'; 
 
 const METRICS = {
   weight_kg:           { name: '体重', unit: 'kg', color: '#6ae3ff' },
@@ -157,16 +132,14 @@ const METRICS = {
 const KEYS = ['date', ...Object.keys(METRICS)];
 let state = { rows: [], currentMetric: 'weight_kg', chart: null };
 
-/**
- * 初期化
- */
+// --- 初期化 ---
 window.onload = () => {
-  initForm();
-  createTabs();
+  renderFormFields();
+  renderTabs();
   fetchData();
 };
 
-function initForm() {
+function renderFormFields() {
   const container = document.getElementById('formFields');
   let html = `<div class="field full"><label>測定日</label><input type="date" id="f_date"></div>`;
   Object.keys(METRICS).forEach(key => {
@@ -176,7 +149,7 @@ function initForm() {
   container.innerHTML = html;
 }
 
-function createTabs() {
+function renderTabs() {
   const container = document.getElementById('tabContainer');
   Object.keys(METRICS).forEach(key => {
     const div = document.createElement('div');
@@ -192,31 +165,30 @@ function createTabs() {
   });
 }
 
-/**
- * 通信処理
- */
+// --- 通信 ---
 async function fetchData() {
   document.getElementById('status').textContent = '同期中...';
   try {
-    const res = await fetch(`${ENDPOINT}?action=read&token=${TOKEN}`);
-    const data = await res.json();
-    // GASからの配列をオブジェクトに変換
-    state.rows = data.rows.map(r => {
+    const response = await fetch(`${ENDPOINT}?action=read&token=${TOKEN}`);
+    const data = await response.json();
+    
+    // GASの配列 [date, weight, bmi...] をオブジェクトに変換
+    state.rows = (data.rows || []).map(r => {
       let obj = {};
       KEYS.forEach((key, i) => {
-        obj[key] = (key === 'date') ? r[i] : parseFloat(r[i]) || 0;
+        obj[key] = (key === 'date') ? r[i] : (parseFloat(r[i]) || 0);
       });
       return obj;
     }).sort((a, b) => a.date.localeCompare(b.date));
     
     updateUI();
   } catch (e) {
-    document.getElementById('status').textContent = 'エラーが発生しました';
+    document.getElementById('status').textContent = '読み込み失敗。URLを確認してください。';
     console.error(e);
   }
 }
 
-async function saveData() {
+document.getElementById('btnSave').onclick = async () => {
   const btn = document.getElementById('btnSave');
   btn.disabled = true; btn.textContent = '保存中...';
 
@@ -224,42 +196,47 @@ async function saveData() {
   payload.append('action', 'upsert');
   payload.append('token', TOKEN);
   KEYS.forEach(key => {
-    payload.append(key, document.getElementById(`f_${key === 'date' ? 'date' : key}`).value);
+    payload.append(key, document.getElementById(`f_${key}`).value);
   });
 
   try {
     await fetch(ENDPOINT, { method: 'POST', mode: 'no-cors', body: payload });
-    closeModal('modalForm');
-    fetchData();
-  } catch (e) { alert('保存失敗'); }
-  btn.disabled = false; btn.textContent = '保存する';
-}
+    setTimeout(() => { // GASの反映待ち
+      closeModal('modalForm');
+      fetchData();
+      btn.disabled = false; btn.textContent = '保存する';
+    }, 500);
+  } catch (e) { alert('保存エラー'); btn.disabled = false; }
+};
 
-/**
- * 描画
- */
+// --- 描画 ---
 function updateUI() {
-  document.getElementById('dataCount').textContent = state.rows.length;
-  if (state.rows.length > 0) {
-    const last = state.rows[state.rows.length - 1];
-    document.getElementById('status').textContent = `${last.date} のデータ`;
+  const count = state.rows.length;
+  document.getElementById('dataCount').textContent = count;
+  
+  if (count > 0) {
+    const last = state.rows[count - 1];
+    document.getElementById('status').textContent = `${last.date} 更新済み`;
     document.getElementById('kpi-weight').innerHTML = `${last.weight_kg.toFixed(1)}<span class="unit">kg</span>`;
     document.getElementById('kpi-fat').innerHTML = `${last.body_fat_pct.toFixed(1)}<span class="unit">%</span>`;
     document.getElementById('kpi-muscle').innerHTML = `${last.skeletal_muscle_kg.toFixed(1)}<span class="unit">kg</span>`;
     document.getElementById('kpi-bmi').textContent = last.bmi.toFixed(1);
     renderChart();
+  } else {
+    document.getElementById('status').textContent = 'データがありません';
   }
 }
 
 function renderChart() {
-  const ctx = document.getElementById('mainChart').getContext('2d');
+  const canvas = document.getElementById('mainChart');
+  const ctx = canvas.getContext('2d');
   const m = METRICS[state.currentMetric];
   
   if (state.chart) state.chart.destroy();
   state.chart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: state.rows.map(r => r.date.split('-').slice(1).join('/')),
+      labels: state.rows.map(r => r.date.substring(5)), // MM-DD
       datasets: [{
         label: m.name,
         data: state.rows.map(r => r[state.currentMetric]),
@@ -267,7 +244,8 @@ function renderChart() {
         backgroundColor: m.color + '22',
         fill: true,
         tension: 0.3,
-        pointRadius: 4
+        pointRadius: 4,
+        pointBackgroundColor: m.color
       }]
     },
     options: {
@@ -275,75 +253,82 @@ function renderChart() {
       maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { grid: { display: false }, ticks: { color: '#9fb0d6' } },
+        x: { grid: { display: false }, ticks: { color: '#9fb0d6', font: { size: 10 } } },
         y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9fb0d6' } }
       }
     }
   });
 }
 
-/**
- * モーダル操作
- */
-function openModal(id, idx = null) {
+// --- モーダル・履歴 ---
+function openModal(id, date = null) {
   document.getElementById(id).style.display = 'flex';
   if (id === 'modalForm') {
-    document.getElementById('btnDelete').style.display = (idx !== null) ? 'block' : 'none';
-    if (idx !== null) {
-      const data = state.rows[idx];
+    const isEdit = date !== null;
+    document.getElementById('modalTitle').textContent = isEdit ? 'データの修正' : '新規入力';
+    document.getElementById('btnDelete').style.display = isEdit ? 'block' : 'none';
+    
+    if (isEdit) {
+      const data = state.rows.find(r => r.date === date);
       KEYS.forEach(k => document.getElementById(`f_${k}`).value = data[k]);
+      document.getElementById('f_date').readOnly = true;
     } else {
+      KEYS.forEach(k => document.getElementById(`f_${k}`).value = '');
       document.getElementById('f_date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('f_date').readOnly = false;
     }
   } else if (id === 'modalHistory') {
-    renderHistory();
+    const list = document.getElementById('historyList');
+    list.innerHTML = state.rows.slice().reverse().map(r => `
+      <div class="history-item">
+        <div><b>${r.date}</b><br><small>${r.weight_kg}kg / ${r.body_fat_pct}%</small></div>
+        <button class="chip" onclick="closeModal('modalHistory'); openModal('modalForm', '${r.date}')">修正</button>
+      </div>
+    `).join('');
   }
 }
 
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-function renderHistory() {
-  const list = document.getElementById('historyList');
-  list.innerHTML = state.rows.slice().reverse().map((r, i) => `
-    <div class="history-item">
-      <span><b>${r.date}</b>: ${r.weight_kg}kg</span>
-      <button class="chip" onclick="closeModal('modalHistory'); openModal('modalForm', ${state.rows.length - 1 - i})">修正</button>
-    </div>
-  `).join('');
-}
-
-/**
- * PDF出力
- */
-async function exportPDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  doc.setFontSize(20);
-  doc.text("ProgressFit Report", 10, 20);
-  
-  let y = 30;
-  state.rows.forEach(r => {
-    if (y > 270) { doc.addPage(); y = 20; }
-    doc.setFontSize(10);
-    doc.text(`${r.date} | 体重:${r.weight_kg}kg | 体脂肪:${r.body_fat_pct}% | 筋肉:${r.skeletal_muscle_kg}kg`, 10, y);
-    y += 7;
-  });
-  doc.save("fitness_report.pdf");
-}
-
-// イベント
-document.getElementById('btnAdd').onclick = () => openModal('modalForm');
-document.getElementById('btnHistory').onclick = () => openModal('modalHistory');
-document.getElementById('btnSave').onclick = saveData;
-document.getElementById('btnExport').onclick = exportPDF;
 document.getElementById('btnDelete').onclick = async () => {
-  if(!confirm('削除しますか？')) return;
-  const payload = new URLSearchParams({ action: 'delete', token: TOKEN, date: document.getElementById('f_date').value });
-  await fetch(ENDPOINT, { method: 'POST', mode: 'no-cors', body: payload });
+  if(!confirm('本当に削除しますか？')) return;
+  const date = document.getElementById('f_date').value;
+  await fetch(ENDPOINT, { method: 'POST', mode: 'no-cors', body: new URLSearchParams({ action: 'delete', token: TOKEN, date }) });
   closeModal('modalForm');
   fetchData();
 };
-</script>
 
+// --- PDF出力 (全グラフ対応) ---
+document.getElementById('btnPdf').onclick = async () => {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const statusEl = document.getElementById('status');
+  statusEl.textContent = 'PDF生成中...';
+
+  doc.setFontSize(22);
+  doc.text("Fitness Progress Report", 20, 20);
+  doc.setFontSize(12);
+  doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 30);
+
+  let y = 40;
+  // 各項目のグラフを画像として生成してPDFに追加
+  for (const key of Object.keys(METRICS)) {
+    state.currentMetric = key;
+    renderChart();
+    // グラフの描画を待つ
+    await new Promise(r => setTimeout(r, 300));
+    const imgData = document.getElementById('mainChart').toDataURL('image/png');
+    
+    if (y > 200) { doc.addPage(); y = 20; }
+    doc.text(`■ ${METRICS[key].name} (${METRICS[key].unit})`, 20, y);
+    doc.addImage(imgData, 'PNG', 15, y + 5, 180, 80);
+    y += 100;
+  }
+
+  doc.save("ProgressFit_Report.pdf");
+  statusEl.textContent = 'PDF出力完了';
+  renderChart(); // 元の表示に戻す
+};
+</script>
 </body>
 </html>
